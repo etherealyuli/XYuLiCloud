@@ -1,0 +1,90 @@
+server:
+  port: 14748
+spring:
+  application:
+    name: auth
+  datasource:
+    url: jdbc:mysql://localhost:3306/my_cloud?useUnicode=true&characterEncoding=utf8&useAffectedRows=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    # see https://github.com/alibaba/druid/tree/master/druid-spring-boot-starter
+    druid:
+      # 初始化连接数量，最大最小连接数
+      initial-size: 1
+      max-active: 10
+      min-idle: 1
+      # 获取连接等待超时的时间
+      max-wait: 1000
+      # 超过时间限制是否回收
+      remove-abandoned: true
+      # 超过时间限制多长(秒)
+      remove-abandoned-timeout: 180
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 600000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      # 用来检测连接是否有效的sql，要求是一个查询语句
+      validation-query: SELECT 1 FROM DUAL
+      # 申请连接的时候检测
+      test-while-idle: true
+      # 申请连接时执行validationQuery检测连接是否有效，配置为true会降低性能
+      test-on-borrow: false
+      # 归还连接时执行validationQuery检测连接是否有效，配置为true会降低性能
+      test-on-return: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 50
+      # 属性类型是字符串，通过别名的方式配置扩展插件，常用的插件有：
+      # 监控统计用的filter:stat 日志用的filter:log4j 防御SQL注入的filter:wall
+      filters: wall,slf4j
+      # 合并多个DruidDataSource的监控数据
+      # use-global-data-source-stat: true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        server-addr: localhost:8848
+      config:
+        enabled: true
+        server-addr: localhost:8848
+        file-extension: yml
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+redisson:
+  host: localhost:6379
+  database: 0
+  timeout: 5000
+  threads: 8
+  nettyThreads: 8
+  notifyExpiredEventKeyPrefix: xyuli:cloud
+swagger:
+  enable: true
+  name: xyuli
+  email: etherealyuli@gmail.com
+  url: www.xyuli.cn
+  version: 1.0.1
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: del # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+#token配置
+token:
+  #开启过期时间
+  enableExpire: true
+  #过期毫秒 5184000（24小时）
+  expireMilliseconds: 5184000
+request:
+  uri:
+    white:
+      name: swagger
+      enable: true
+      uri:
+        - /v3/**
+        - /doc.html
+        - /webjars/**
+        - /favicon.ico
+        - /swagger-resources
