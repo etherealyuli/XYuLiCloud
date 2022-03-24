@@ -21,6 +21,7 @@ public class GlobalInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        log.debug(request.getRequestURL().toString());
         startTime = System.currentTimeMillis();
         return true;
     }
