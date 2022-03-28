@@ -5,8 +5,13 @@ import cn.xyuli.cloud.common.enums.HttpStatus;
 import cn.xyuli.cloud.common.vo.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
 
 /**
  * @ClassName ExceptionHandler
@@ -71,7 +76,24 @@ public class GlobalExceptionHandler {
         log.error("缺少请求参数：{}",httpMessageNotReadableException.getMessage());
         httpMessageNotReadableException.printStackTrace();
         return R.build(HttpStatus.BAD_REQUEST);
-    }    /**
+    }
+    /**
+     * 参数校验异常
+     * @param methodArgumentNotValidException 参数校验异常
+     * @return 异常响应报文
+     */
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public R handlerMethodArgumentNotValidException(MethodArgumentNotValidException methodArgumentNotValidException){
+        log.error("参数校验失败：{}",methodArgumentNotValidException.getMessage());
+        BindingResult result = methodArgumentNotValidException.getBindingResult();
+        List<FieldError> fieldErrors = result.getFieldErrors();
+        StringBuffer sb = new StringBuffer();
+        fieldErrors.forEach(fieldError -> {
+            sb.append(fieldError.getField()).append(":").append(fieldError.getDefaultMessage()).append("\n");
+        });
+        return R.build(400,sb.toString());
+    }
+    /**
      * 运行异常
      * @param runtimeException 运行异常
      * @return 异常响应报文
