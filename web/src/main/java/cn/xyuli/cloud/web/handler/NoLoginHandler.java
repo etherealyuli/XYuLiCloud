@@ -48,7 +48,7 @@ public class NoLoginHandler implements MethodPreprocess , ClassPreprocess {
 
     private void saveNoLoginUrl(Class clazz,Method method, Set<String> noLoginUrlSet) {
         Annotation[] declaredAnnotations = method.getDeclaredAnnotations();
-        String classMapping = "";
+        String classMapping = null;
         //判断类上面有没有使用RequestMapping注解
         if (clazz.isAnnotationPresent(RequestMapping.class)){
             RequestMapping annotation = (RequestMapping) clazz.getAnnotation(RequestMapping.class);
@@ -60,7 +60,13 @@ public class NoLoginHandler implements MethodPreprocess , ClassPreprocess {
                     Method value = declaredAnnotation.annotationType().getMethod("value");
                     String[] invoke = (String[]) value.invoke(declaredAnnotation);
                     for (String uri : invoke) {
-                        uri = "/"+(classMapping.indexOf("/") == 0 ? uri.substring(1,classMapping.length()) : classMapping)+"/"+(uri.indexOf("/") == 0 ? uri.substring(1,uri.length()) : uri);
+                        if (classMapping != null && classMapping.length() != 0){
+                            uri =  "/"+(classMapping.indexOf("/") == 0 ? classMapping.substring(1) : classMapping)+"/"+(uri.indexOf("/") == 0 ? uri.substring(1) : uri);
+                            noLoginUrlSet.add(uri);
+                            log.info("NoLogin:{}",uri);
+                            continue;
+                        }
+                        uri =  "/"+(uri.indexOf("/") == 0 ? uri.substring(1) : uri);
                         noLoginUrlSet.add(uri);
                         log.info("NoLogin:{}",uri);
                     }
